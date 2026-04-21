@@ -91,7 +91,13 @@ Reject non-ML requests early.
 
 ### Prompt used
 - “Is this statement relevant to machine learning or artificial intelligence? Answer only Yes or No.”
+```
+Is the following statement relevant to machine learning or artificial intelligence?
+        
+`{msg}`
 
+Answer only 'Yes' or 'No'
+```
 Implementation reference:
 - [`AgentManager._is_relevant` in `agent_manager/__init__.py`](./agent_manager/__init__.py)
 
@@ -112,6 +118,18 @@ Determine whether the request includes enough information to proceed (especially
 
 ### Prompt used
 - Prompt asks whether key required project fields are present and requests concise yes/no-style decision with reason.
+```
+Given the following JSON object representing the user's requirement for a potential ML or AI project, please tell me whether we have essential information (e.g., problem and dataset) to be used for a AutoML project?
+Please note that our users are not AI experts, you must focus only on the essential requirements, e.g., problem and brief dataset descriptions.
+You do not need to check every details of the requirements. You must also answer 'yes' even though it lacks detailed and specific information.
+
+```json
+{msg}
+```
+
+Please answer with this format: `a 'yes' or 'no' answer; your reasons for the answer` by using ';' to separate between the answer and its reasons.
+If the answer is 'no', you must tell me the alternative solutions or examples for completing such missing information.
+```
 
 Implementation reference:
 - [`AgentManager._is_enough` in `agent_manager/__init__.py`](./agent_manager/__init__.py)
