@@ -47,7 +47,28 @@ Convert free-form user intent into structured machine-readable requirements.
 ### Prompt used
 Used by `PromptAgent.parse(...)` / `PromptAgent.parse_openai(...)`:
 - **System intent**: act as a parser that maps instruction → schema-valid JSON.
+```
+You are an assistant project manager in the AutoML development team. 
+Your task is to parse the user's requirement into a valid JSON format using the JSON specification schema as your reference. Your response must exactly follow the given JSON schema and be based only on the user's instruction. 
+Make sure that your answer contains only the JSON response without any comment or explanation because it can cause parsing errors.
+
+#JSON SPECIFICATION SCHEMA#
+```json
+{json_specification}
+```
+
+Your response must begin with "```json" or "{{" and end with "```" or "}}", respectively.
+```
 - **User template intent**: “Carefully parse #Instruction# into JSON and return only JSON.”
+```
+Please carefully parse the following #Instruction#. 
+Your response can only begin with "```json" or "{{" and end with "```" or "}}" without saying any word or explain.
+
+#Instruction#
+{instruction}
+
+#Valid JSON Response#
+```
 
 Implementation references:
 - [`prompt_agent/__init__.py`](./prompt_agent/__init__.py)
