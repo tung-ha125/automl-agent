@@ -15,16 +15,16 @@ It is implementation-grounded and aligned with the repository structure.
 AutoML-Agent is a multi-agent framework for full-pipeline ML automation.  
 Main runtime components:
 
-- **PromptAgent** (`prompt_agent/__init__.py`)
-- **AgentManager** (`agent_manager/__init__.py`)
-- **DataAgent** (`data_agent/__init__.py`)
-- **ModelAgent** (`model_agent/__init__.py`)
-- **OperationAgent** (`operation_agent/__init__.py`)
-- Retrieval modules in:
-  - `agent_manager/retriever.py`
-  - `data_agent/retriever.py`
-  - `model_agent/retriever.py`
-- Task templates in `prompt_pool/*.py`
+- **PromptAgent** ([`prompt_agent/__init__.py`](./prompt_agent/__init__.py))
+- **AgentManager** ([`agent_manager/__init__.py`](./agent_manager/__init__.py))
+- **DataAgent** ([`data_agent/__init__.py`](./data_agent/__init__.py))
+- **ModelAgent** ([`model_agent/__init__.py`](./model_agent/__init__.py))
+- **OperationAgent** ([`operation_agent/__init__.py`](./operation_agent/__init__.py))
+- Retrieval modules:
+  - [`agent_manager/retriever.py`](./agent_manager/retriever.py)
+  - [`data_agent/retriever.py`](./data_agent/retriever.py)
+  - [`model_agent/retriever.py`](./model_agent/retriever.py)
+- Task templates in [`prompt_pool/`](./prompt_pool/)
 
 ---
 
@@ -49,7 +49,10 @@ Used by `PromptAgent.parse(...)` / `PromptAgent.parse_openai(...)`:
 - **System intent**: act as a parser that maps instruction → schema-valid JSON.
 - **User template intent**: “Carefully parse #Instruction# into JSON and return only JSON.”
 
-(Implementation references: `prompt_agent/__init__.py`, `prompt_agent/WizardLAMP/template_schema.json`, `prompt_agent/schema.json`)
+Implementation references:
+- [`prompt_agent/__init__.py`](./prompt_agent/__init__.py)
+- [`prompt_agent/WizardLAMP/template_schema.json`](./prompt_agent/WizardLAMP/template_schema.json)
+- [`prompt_agent/schema.json`](./prompt_agent/schema.json)
 
 ---
 
@@ -67,7 +70,8 @@ Reject non-ML requests early.
 ### Prompt used
 - “Is this statement relevant to machine learning or artificial intelligence? Answer only Yes or No.”
 
-(Implementation reference: `AgentManager._is_relevant`)
+Implementation reference:
+- [`AgentManager._is_relevant` in `agent_manager/__init__.py`](./agent_manager/__init__.py)
 
 ---
 
@@ -87,7 +91,8 @@ Determine whether the request includes enough information to proceed (especially
 ### Prompt used
 - Prompt asks whether key required project fields are present and requests concise yes/no-style decision with reason.
 
-(Implementation reference: `AgentManager._is_enough`)
+Implementation reference:
+- [`AgentManager._is_enough` in `agent_manager/__init__.py`](./agent_manager/__init__.py)
 
 ---
 
@@ -105,7 +110,8 @@ Build a concise requirement summary used downstream in planning and retrieval.
 ### Prompt used
 - Summarization prompt framing the model as a project organizer to condense essential requirements for later planning.
 
-(Implementation reference: `AgentManager` INIT flow)
+Implementation reference:
+- [`agent_manager/__init__.py`](./agent_manager/__init__.py)
 
 ---
 
@@ -133,7 +139,9 @@ Gather external/project-side knowledge to ground planning.
 5. **Fusion prompt**  
    - merge all source summaries into actionable planning guidance.
 
-(Implementation reference: `agent_manager/retriever.py`, `retrieve_knowledge(...)` and sub-functions)
+Implementation references:
+- [`agent_manager/retriever.py`](./agent_manager/retriever.py)
+- [`retrieve_knowledge(...)` call path in `agent_manager/__init__.py`](./agent_manager/__init__.py)
 
 ---
 
@@ -158,66 +166,69 @@ Generate multiple candidate end-to-end AutoML plans.
   - consistency with user constraints
   - practical implementation focus
 
-(Implementation reference: `AgentManager.make_plans(...)`)
+Implementation reference:
+- [`AgentManager.make_plans(...)` in `agent_manager/__init__.py`](./agent_manager/__init__.py)
 
 ---
 
 ## 7) Per-Plan Parallel Execution: Data + Model Lanes (ACT)
 
-For each candidate plan, `AgentManager.execute_plan(plan)` runs data and model reasoning in parallel-like workflow.
-
----
+For each candidate plan, `AgentManager.execute_plan(plan)` runs data and model reasoning in a parallel-style workflow.
 
 ### 7A) DataAgent plan understanding + dataset retrieval
 
-### Purpose
+#### Purpose
 Produce data-side execution strategy (source, preprocessing, augmentation, checks).
 
-### Input
+#### Input
 - `plan: str`
 - `user_requirements`
 - optional uploaded/local `data_path`
 
-### Output format
-- Detailed **textual data execution result** (no direct final runnable script yet), including:
+#### Output format
+- Detailed **textual data execution result** including:
   - dataset acquisition/selection strategy
   - preprocessing and quality steps
   - expected intermediate outcomes
 
-### Prompt used
+#### Prompt used
 1. **Plan decomposition prompt** (`understand_plan`)  
    - distill the plan into reproducible data tasks.
 2. **Execution synthesis prompt**  
    - generate practical data operations and expected outcomes.
 
-(Implementation references: `data_agent/__init__.py`, `data_agent/retriever.py`)
+Implementation references:
+- [`data_agent/__init__.py`](./data_agent/__init__.py)
+- [`data_agent/retriever.py`](./data_agent/retriever.py)
 
 ---
 
 ### 7B) ModelAgent plan understanding + model retrieval
 
-### Purpose
+#### Purpose
 Produce model-side strategy with candidate models and optimization ideas.
 
-### Input
+#### Input
 - `project_plan`
 - `data_result` from DataAgent
 - `user_requirements`
 - `k` candidate target count
 
-### Output format
+#### Output format
 - Detailed **textual model execution result** including:
   - candidate models (top-k style)
   - training/optimization guidance
   - metric-aware evaluation expectations
 
-### Prompt used
+#### Prompt used
 1. **Plan decomposition prompt** (`understand_plan`)  
    - convert plan to model-centric tasks.
 2. **Execution synthesis prompt**  
    - produce concrete modeling and HPO instructions with expected outcomes.
 
-(Implementation references: `model_agent/__init__.py`, `model_agent/retriever.py`)
+Implementation references:
+- [`model_agent/__init__.py`](./model_agent/__init__.py)
+- [`model_agent/retriever.py`](./model_agent/retriever.py)
 
 ---
 
@@ -238,7 +249,8 @@ Filter weak/invalid plan outputs before code generation.
 ### Prompt used
 - “Given proposed solution and user requirements, answer only Pass or Fail.”
 
-(Implementation reference: `AgentManager.verify_solution(...)`)
+Implementation reference:
+- [`AgentManager.verify_solution(...)` in `agent_manager/__init__.py`](./agent_manager/__init__.py)
 
 ---
 
@@ -258,7 +270,8 @@ Turn selected validated strategy into implementable coding instructions.
 ### Prompt used
 - Instruction-composition prompt asks model to act like a senior MLOps engineer and produce complete implementation guidance from selected strategy.
 
-(Implementation reference: `AgentManager.implement_solution(...)` orchestration)
+Implementation reference:
+- [`agent_manager/__init__.py`](./agent_manager/__init__.py)
 
 ---
 
@@ -271,12 +284,14 @@ Seed code generation with task-specific scaffold.
 - Task name (e.g., tabular classification, text classification, forecasting, etc.)
 
 ### Output format
-- Template code/context loaded from `prompt_pool/{task}.py`.
+- Template code/context loaded from [`prompt_pool/{task}.py`](./prompt_pool/).
 
 ### Prompt used
 - No separate user-facing prompt; template becomes part of the coding context passed to OperationAgent.
 
-(Implementation references: `prompt_pool/*.py`, Manager → OperationAgent handoff)
+Implementation references:
+- [`prompt_pool/`](./prompt_pool/)
+- [`agent_manager/__init__.py`](./agent_manager/__init__.py)
 
 ---
 
@@ -285,8 +300,7 @@ Seed code generation with task-specific scaffold.
 ### Purpose
 Generate runnable Python code, execute it, and self-correct using logs.
 
-### Input
-Per attempt:
+### Input (per attempt)
 - coding instructions
 - previous code
 - previous execution logs/errors
@@ -307,7 +321,9 @@ OperationAgent coding prompt includes:
 - requirement to return executable code
 - iteration-aware repair behavior
 
-(Implementation references: `operation_agent/__init__.py`, `operation_agent/execution.py`)
+Implementation references:
+- [`operation_agent/__init__.py`](./operation_agent/__init__.py)
+- [`operation_agent/execution.py`](./operation_agent/execution.py)
 
 ---
 
@@ -327,7 +343,8 @@ Check whether generated code + observed result satisfy user requirements.
 ### Prompt used
 - Verification prompt asking if produced implementation fulfills requirements, with strict Pass/Fail output.
 
-(Implementation reference: POST_EXEC state in `AgentManager`)
+Implementation reference:
+- [`agent_manager/__init__.py`](./agent_manager/__init__.py)
 
 ---
 
@@ -348,7 +365,8 @@ If POST_EXEC fails, revise instructions and retry implementation.
 ### Prompt used
 - Revision prompt focused on correcting concrete issues revealed in logs/verifier feedback while preserving valid parts.
 
-(Implementation reference: REV state transition logic in `AgentManager`)
+Implementation reference:
+- [`agent_manager/__init__.py`](./agent_manager/__init__.py)
 
 ---
 
@@ -368,7 +386,7 @@ Return final accepted solution artifact.
 
 ---
 
-# Compact Pipeline Table
+## Compact Pipeline Table
 
 | Step | Input | Output format | Prompt type |
 |---|---|---|---|
@@ -387,20 +405,30 @@ Return final accepted solution artifact.
 
 ---
 
-# Key Files to Inspect
+## Quick Access: Key Files
 
-- Orchestration: `agent_manager/__init__.py`
-- Planning retrieval: `agent_manager/retriever.py`
-- Prompt parsing: `prompt_agent/__init__.py`
-- Data strategy: `data_agent/__init__.py`, `data_agent/retriever.py`
-- Model strategy: `model_agent/__init__.py`, `model_agent/retriever.py`
-- Code generation/execution: `operation_agent/__init__.py`, `operation_agent/execution.py`
-- Task templates: `prompt_pool/*.py`
-- Configuration: `configs.py`
+- Orchestration: [`agent_manager/__init__.py`](./agent_manager/__init__.py)
+- Planning retrieval: [`agent_manager/retriever.py`](./agent_manager/retriever.py)
+- Prompt parsing: [`prompt_agent/__init__.py`](./prompt_agent/__init__.py)
+- Data strategy:
+  - [`data_agent/__init__.py`](./data_agent/__init__.py)
+  - [`data_agent/retriever.py`](./data_agent/retriever.py)
+- Model strategy:
+  - [`model_agent/__init__.py`](./model_agent/__init__.py)
+  - [`model_agent/retriever.py`](./model_agent/retriever.py)
+- Code generation/execution:
+  - [`operation_agent/__init__.py`](./operation_agent/__init__.py)
+  - [`operation_agent/execution.py`](./operation_agent/execution.py)
+- Task templates: [`prompt_pool/`](./prompt_pool/)
+- Configuration: [`configs.py`](./configs.py)
+- Project overview: [`README.md`](./README.md)
+- Existing explanation docs:
+  - [`EXPLANATION.md`](./EXPLANATION.md)
+  - [`DETAILED_EXPLANATION.md`](./DETAILED_EXPLANATION.md)
 
 ---
 
-# Practical Notes
+## Practical Notes
 
 1. **Two verification gates** improve reliability:
    - PRE_EXEC (before code)
@@ -408,9 +436,9 @@ Return final accepted solution artifact.
 
 2. **Template-driven generation** reduces cold-start code errors.
 
-3. **Iterative repair loop** uses real runtime logs, not just static reasoning.
+3. **Iterative repair loop** uses runtime logs, not only static reasoning.
 
 4. Final quality depends heavily on:
-   - API/backend configuration in `configs.py`
+   - API/backend setup in [`configs.py`](./configs.py)
    - retrieval quality/availability
    - clarity/completeness of parsed requirements
