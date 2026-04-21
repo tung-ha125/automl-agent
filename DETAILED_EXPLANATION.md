@@ -109,7 +109,8 @@ Build a concise requirement summary used downstream in planning and retrieval.
 
 ### Prompt used
 ```
-Please briefly summarize the user's request represented in the following JSON object into a single paragraph based on how you understand it.\n\r{self.user_requirements}
+Please briefly summarize the user's request represented in the following JSON object into a single paragraph based on how you understand it.
+{self.user_requirements}
 ```
 
 Implementation reference:
