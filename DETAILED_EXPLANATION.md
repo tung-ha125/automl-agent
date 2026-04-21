@@ -108,7 +108,9 @@ Build a concise requirement summary used downstream in planning and retrieval.
 - A compact plain-text summary string (`req_summary`).
 
 ### Prompt used
-- Summarization prompt framing the model as a project organizer to condense essential requirements for later planning.
+```
+Please briefly summarize the user's request represented in the following JSON object into a single paragraph based on how you understand it.\n\r{self.user_requirements}
+```
 
 Implementation reference:
 - [`agent_manager/__init__.py`](./agent_manager/__init__.py)
