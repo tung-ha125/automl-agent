@@ -59,6 +59,8 @@ Make sure that your answer contains only the JSON response without any comment o
 
 Your response must begin with "```json" or "{{" and end with "```" or "}}", respectively.
 ````
+`json_specification` was defined in [`prompt_agent/WizardLAMP/template_schema.json`](./prompt_agent/WizardLAMP/template_schema.json)
+
 - **User template intent**: “Carefully parse #Instruction# into JSON and return only JSON.”
 ```
 Please carefully parse the following #Instruction#. 
@@ -72,7 +74,6 @@ Your response can only begin with "```json" or "{{" and end with "```" or "}}" w
 
 Implementation references:
 - [`prompt_agent/__init__.py`](./prompt_agent/__init__.py)
-- [`prompt_agent/WizardLAMP/template_schema.json`](./prompt_agent/WizardLAMP/template_schema.json)
 - [`prompt_agent/schema.json`](./prompt_agent/schema.json)
 
 ---
